@@ -16,7 +16,7 @@ project:
     - analysis/09-fea-annotation.qmd
     - analysis/10-spatial-features.qmd
     - analysis/11-cell-atlas.qmd
-  execute:
+execute:
     message: false
     warning: false
 

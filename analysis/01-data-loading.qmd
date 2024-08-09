@@ -4,9 +4,9 @@ params:
     prefix:
       - "data/"
     marker:
-      - "ACTA2"
+      - "Acta2"
     sample.sheet:
-      - "V1_Breast_Cancer.csv" # "V1_Mouse_Brain.csv"
+      - "Visium_FFPE_Mouse_Brain_Samples.csv"
 ---
 
 # Setup
@@ -55,13 +55,13 @@ You can supply these paramaters upon render.
 Restore project dependencies:
 
 ```{r}
-renv::restore()
+#renv::restore()
 ```
 
 Add child documents
 
 ```{r}
-#| child = "analysis/big-data.qmd"
+child = "analysis/big-data.qmd"
 ```
 
 Load Bioconductor packages:
@@ -141,7 +141,7 @@ Some additional filtering is useful to us however - for example zero count genes
 ```{r}
 #| eval: true
 
-seurat <- lapply(seurat, function(x) {x[rowSums(x) > 0, ]})
+#seurat <- lapply(seurat, function(x) {x[rowSums(x) > 0, ]})
 ```
 
 ### Remove "DEPRECATED-" genes
@@ -159,7 +159,7 @@ And also If you need to change spaceranger filtering for FFPE probes:
 ```{r}
 #| eval: true
 
-seurat <- lapply(seurat, function(x) {x[!grepl("DEPRECATED", rownames(x)), ]})
+#seurat <- lapply(seurat, function(x) {x[!grepl("DEPRECATED", rownames(x)), ]})
 ```
 
 ### Test genes of interest still in final expression matrix

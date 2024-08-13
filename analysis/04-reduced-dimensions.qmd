@@ -71,7 +71,7 @@ You can supply these paramaters upon render.
 Restore project dependencies:
 
 ```{r}
-renv::restore()
+#renv::restore()
 ```
 
 Add child documents

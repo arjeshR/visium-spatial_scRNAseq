@@ -159,7 +159,7 @@ And also If you need to change spaceranger filtering for FFPE probes:
 ```{r}
 #| eval: true
 
-#seurat <- lapply(seurat, function(x) {x[!grepl("DEPRECATED", rownames(x)), ]})
+seurat <- lapply(seurat, function(x) {x[!grepl("DEPRECATED", rownames(x)), ]})
 ```
 
 ### Test genes of interest still in final expression matrix

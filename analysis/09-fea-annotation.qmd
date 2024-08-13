@@ -4,7 +4,7 @@ params:
   res:
     - "08-marker-detection-res.rds"
   species:
-    - "Homo sapiens" # Mus musculus or Homo sapiens
+    - "Mus musculus" # Mus musculus or Homo sapiens
   feature:
     - "gene"
   split.res:
@@ -133,7 +133,7 @@ The paramater `split.res` is important as it will split the results table furthe
 Restore project dependencies:
 
 ```{r}
-renv::restore()
+#renv::restore()
 ```
 
 Add child documents
@@ -1076,7 +1076,7 @@ for (n in sample_names) {
 
     cat("####", n, "\n")
 
-    print(wrap_plots(enrichplots, ncol = 2))
+    print(enrichplots, ncol = 2)
 
     cat('\n\n')
 
@@ -1111,7 +1111,7 @@ for (n in sample_names) {
 
     cat("####", n, "\n")
 
-    print(wrap_plots(enrichplots, ncol = 2))
+    print(enrichplots, ncol = 2)
 
     cat('\n\n')
 
@@ -1148,7 +1148,7 @@ if (!is.null(custom_genesets_t2g)) {
   
     cat("####", n, "\n")
 
-    print(wrap_plots(enrichplots, ncol = 2))
+    print(enrichplots, ncol = 2)
 
     cat('\n\n')
   }

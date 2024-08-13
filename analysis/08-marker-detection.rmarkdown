@@ -1,0 +1,544 @@
+---
+title: "Marker gene detection"
+params:
+  seurat:
+    - "07-integrate-samples.rds" # "06-merge-samples.rds" # "05-clustering.rds"
+  regress:
+    - FALSE
+  min.pct:
+    - 0.25
+  logfc.threshold:
+    - 0.25
+  only.pos:
+    - TRUE
+  pval.adj.thres:
+    - 0.1
+  plot_width:
+    - 5
+  plot_height:
+    - 7
+  colours:
+    - "RdBu"
+  combined_table:
+    - FALSE
+---
+
+
+
+# Setup
+
+## Parameters
+
+
+
+```{r}
+#| code-fold: true
+#| label: tbl-params
+#| tbl-cap: Description of paramaters used in notebook.
+
+par <- list(
+
+list(
+Parameter = "seurat",
+Value = params$seurat,
+Description = "Name of seurat object used for analysis."
+),
+list(
+Parameter = "regress",
+Value = params$regress,
+Description = "Name of variables for regression. Set to FALSE if none required."
+),
+list(
+Parameter = "min.pct",
+Value = params$min.pct,
+Description = "Only test genes that are detected in a minimum fraction of min.pct cells in either of the two populations - Default is 0.1"
+),
+list(
+Parameter = "logfc.threshold",
+Value = params$logfc.threshold,
+Description = "Limit testing to genes which show, on average, at least X-fold difference (log-scale) between the two groups of cells. Default is 0.25."
+),
+list(
+Parameter = "only.pos",
+Value = params$only.pos,
+Description = "Only return positive markers (FALSE by default)."
+),
+list(
+Parameter = "pval.adj.thres",
+Value = params$pval.adj.thres,
+Description = "Adjusted p-value threshold for returning markers."
+),
+list(
+Parameter = "colours",
+Value = params$colours,
+Description = "RdBu"
+),
+list(
+Parameter = "combined_table",
+Value = params$combined_table,
+Description = "Boolean whether to combine DT tables into single table across groups and samples or plot them separately."
+)
+)
+
+par <- jsonlite::toJSON(par, pretty = TRUE)
+
+knitr::kable(jsonlite::fromJSON(par))
+```
+
+
+
+::: callout-tip
+You can supply these paramaters upon render.
+:::
+
+<button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#BlockNamedep"> Show/Hide Dependencies</button>  
+
+<div id="BlockNamedep" class="collapse">  
+
+## Dependencies
+
+Restore project dependencies:
+
+
+
+```{r}
+renv::restore()
+```
+
+
+
+Add child documents
+
+
+
+```{r}
+#| child = "analysis/big-data.qmd"
+```
+
+
+
+Load Bioconductor packages:
+
+
+
+```{r}
+#| message: false
+#| warning: false
+
+library(Seurat)
+```
+
+
+
+Load CRAN packages:
+
+
+
+```{r}
+#| message: false
+#| warning: false
+
+library(patchwork)
+library(ggplot2)
+library(dplyr)
+library(reshape2)
+library(viridis)
+library(clustree)
+library(RColorBrewer)
+library(pheatmap)
+library(DT)
+library(ggplotify)
+```
+
+
+
+Source user-defined functions:
+
+
+
+```{r}
+source("scripts/loadInSpatial.R")
+source("scripts/parseCloupe.R")
+source("scripts/plotpHeatmap.R")
+source("scripts/reduceDims.R")
+source("scripts/findMarkers.R")
+source("scripts/createDT.R")
+```
+
+
+
+::: callout-note
+Much of the visium quarto workflow include Rscripts which are not part of a external library but are sourced at the start of each workflow. Each script is stored within `scripts/`. Please see the start of each .qmd file for the details of which scripts have been sourced.
+:::
+
+</div>
+
+# Processing
+
+## Reading in experiment object
+
+We can read in the `output/06-merge-samples.rds` or `output/07-integrate-samples.rds` seurat object that we saved from previous worksheets (See quarto worksheets `06-merge-samples.qmd` and `07-integrate-samples.qmd` for more details).
+
+Alternatively you can run this step of the workflow on un-merged or un-integrated samples following clustering (`output/05-clustering.rds` and `05-clustering.qmd`). In this case you will need to tweak plot sizes (see `params$plot_width` and `params$plot_height` for more details).
+
+::: callout-note
+Please take the seurat object of choice and define them as `params$seurat`.
+:::
+
+Read experiment data:
+
+
+
+```{r}
+seurat <- readRDS(paste0("output/", params$seurat))
+```
+
+
+
+## Setup colour palette
+
+Below we set the colour palette we will use for the custom pheatmap used for plotting of cluster markers.
+
+Other options from RColourBrewer are `RdYlBu`, `RdYlGn`, `Spectral` etc.
+
+
+
+```{r}
+col <- colorRampPalette(rev(brewer.pal(n = 11, name = params$colours)))(100)
+```
+
+
+
+## PrepSCTFindmarkers
+
+As discussed during `06-merge-samples.qmd` and `07-integrate-samples.qmd` worksheets where SCT normalisation has been completed on individual samples and then these samples have subsequently been combined - these combined objects contain multiple SCT models. Before further downstream analysis, therefore, we need to perform additional processing on these combined objects.
+
+As this worksheet may be completed on un-combined objects the code chunk below checks if the seurat object is combined before applying this extra processing step.
+
+`PrepSCTFindMarkers` prepares the "data" slot of SCT assay for differential expression and downstream visualisation.
+
+Please see vignette for further details: https://satijalab.org/seurat/articles/sctransform_v2_vignette.html
+
+
+
+```{r}
+#| message: false
+#| warning: false
+
+seuratprep <- prepSeuratLoad(seurat)
+```
+
+
+
+## ScaleData
+
+A next step we need to take with our pre-processing is scale the data ready for heatmap visualisation. This is a simple subtraction of the mean expression for that gene divided by the sd. This needs to be completed because when we combine samples they will not have a unified scaled data slot.
+
+We complete this process with the `ScaleData` function from seurat. If you wish to regress out additional variables this is possible with the same `ScaleData` function by supplying the variable name as `param$regress`.
+
+Please see https://satijalab.org/seurat/reference/scaledata for more details.
+
+We save the result of this scaling into a new slot named "`[[ScaleData]]`" so not to write over other important normalisation values from SCT normalisation (pearsons residuals).
+
+The seurat object can be a bit tricky and we it can often get confusing what assay or data slot seurat is utilising. If you are interested this handy graphic from Lior pachter describes it pretty well https://twitter.com/lpachter/status/1524413513233575936/photo/1
+
+
+
+```{r}
+#| message: false
+#| warning: false
+
+seuratprep <- lapply(seuratprep, scaleData, regress = params$regress)
+```
+
+
+
+## Markers Cluster
+
+Next we find candidate marker genes between clusters using the `FindAllMarkers` function from seurat. By default it uses the Wilcoxon Rank Sum test to compute p-values. At current we have not allowed you to change this but this could be done if there is a need.
+
+::: callout-note
+You can change adjusted p-value threshold (`pval.adj.thres`), logfc threshold (`logfc.threshold`), whether you want only positive expressed genes (`only.pos`), and minimum % cells with gene expressed in any group (`min.pct`) paramaters before running this code chunk.
+:::
+
+For more information regarding differential expression using seurat between clusters please see:
+
+-   https://satijalab.org/seurat/articles/pbmc3k_tutorial.html#finding-differentially-expressed-features-cluster-biomarkers-
+
+And where testing following intergration is being considered please see:
+
+-   https://satijalab.org/seurat/articles/integration_introduction.html#perform-an-integrated-analysis-1
+
+
+
+```{r}
+#| message: false
+#| warning: false
+
+res <- lapply(seuratprep, findAllMarkers, only.pos = params$only.pos, min.pct = params$min.pct, 
+              logfc.threshold = params$logfc.threshold, pval.adj.thres = params$pval.adj.thres)
+```
+
+
+
+### Write csv to file
+
+Below we write these results to csv file:
+
+
+
+```{r}
+#| message: false
+#| warning: false
+#| results: hide
+
+lapply(res, function(x) {write.csv(x, file = paste0("output/", unique(x$Sample), 
+                                                    "-FindMarkersClusters.csv"))})
+```
+
+
+
+### Interactive results
+
+Below we use the DT package to plot these results interactively:
+
+
+
+```{r}
+#| include: false
+#| echo: false
+#| results: hide
+
+DT::datatable(matrix())
+options(DT.warn.size = FALSE)
+```
+
+```{r}
+#| results: "asis"
+#| echo: true
+
+if (params$combined_table == TRUE) {
+
+  resbind <- bind_rows(res)
+
+
+  DT::datatable(resbind, class = 'cell-border stripe', extensions = 'Buttons', 
+                      options = list(dom = 'Bfrtip', buttons = c('copy', 'csv', 'excel', 'pdf', 'print')),
+                      filter = "top", 
+                      width = "100%")
+} else {
+
+  sample_names <- names(res)
+
+  htmltools::tagList(lapply(sample_names, createDT, res = res))
+
+}
+
+```
+
+
+
+### Define genes interest
+
+Next we get the top results for each cluster ready for plotting. As there are often numerous clusters it is often useful to keep this number small. Here we have kept the number as 5.
+
+
+
+```{r}
+topgenes <- lapply(seuratprep, topFeatClustList, res = res, head_num = 5)
+```
+
+
+
+Below we plot these markers in two ways - using the heatmap functions supplied by Seurat (DoHeatmap), and using pheatmap.
+
+### DoHeatmap
+
+
+
+```{r}
+doheatmaps <- lapply(seuratprep, plotHeatmap, featureList = topgenes, 
+                     type = "DoHeatmap", legend = TRUE)
+```
+
+
+
+::: {.panel-tabset}
+
+
+
+```{r}
+#| fig.width: !expr params$plot_width
+#| fig.height: !expr params$plot_height
+#| fig-cap: Heatmap of top genes per cluster.
+#| results: "asis"
+#| echo: false
+
+sample_names <- names(res)
+
+for (n in sample_names) {
+
+  cat("####", n, "\n")
+
+  print(doheatmaps[[n]])
+
+  cat('\n\n')
+}
+```
+
+
+
+:::
+
+Below we plot the same heatmap but include a legend.
+
+
+
+```{r}
+doheatmapslegend <- lapply(seuratprep, plotHeatmap, featureList = topgenes, 
+                           type = "DoHeatmap", legend = TRUE)
+```
+
+
+
+::: {.panel-tabset}
+
+
+
+```{r}
+#| fig.width: !expr params$plot_width
+#| fig.height: !expr params$plot_height
+#| fig-cap: Heatmap of top genes per cluster with legend.
+#| results: "asis"
+#| echo: false
+
+sample_names <- names(res)
+
+for (n in sample_names) {
+
+  cat("####", n, "\n")
+
+  print(doheatmapslegend[[n]])
+
+  cat('\n\n')
+}
+```
+
+
+:::
+
+### pheatmap
+
+Below we plot the same features but do this using the pheatmap function.
+
+
+
+```{r}
+#| message: false
+#| warning: false
+#| fig.show: hide
+
+pheatmaps <- lapply(seuratprep, plotHeatmap, featureList = topgenes, 
+                    type = "pheatmap", head_num = 5)
+```
+
+
+
+::: {.panel-tabset}
+
+
+
+```{r}
+#| fig.width: !expr (params$plot_width + 5)
+#| fig.height: !expr params$plot_height
+#| fig-cap: pHeatmap of top genes per cluster with legend.
+#| results: "asis"
+#| echo: false
+
+sample_names <- names(res)
+
+for (n in sample_names) {
+
+  cat("####", n, "\n")
+
+  print(as.ggplot(pheatmaps[[n]]))
+
+  cat('\n\n')
+}
+
+```
+
+
+:::
+
+# Output
+
+Save experiment object:
+
+
+
+```{r}
+saveRDS(seuratprep, file = "output/08-marker-detection.rds")
+```
+
+
+
+Save out results object:
+
+
+
+```{r}
+saveRDS(res, file = "output/08-marker-detection-res.rds")
+```
+
+
+
+## Output Description 
+
+
+
+```{r}
+#| code-fold: true
+#| label: tbl-outputs
+#| tbl-cap: Description of outputs created.
+
+par <- list(
+
+list(
+File = "seuratprep",
+Link = "[seuratprep](../../output/08-marker-detection.rds)",
+Description = "Seurat object saved as rds object filtered, normalised, dimensionality reduced, clustered, with PrepSCTFindMarkers run if multiple SCT models present (merged or integrated seurat object), and ScaleData assay added."
+),
+list(
+File = "res",
+Link = "[res](../../output/08-marker-detection-res.rds)",
+Description = "Results table of markers following Seurat::FindAllMarkers."
+)
+)
+
+par <- jsonlite::toJSON(par, pretty = TRUE)
+
+knitr::kable(jsonlite::fromJSON(par))
+```
+
+
+
+## Session information 
+
+Print session information:
+
+<button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#BlockName"> Show/Hide </button>  
+
+<div id="BlockName" class="collapse">  
+
+
+
+```{r}
+#| code-fold: false
+sessionInfo()
+```
+
+
+
+</div>
+

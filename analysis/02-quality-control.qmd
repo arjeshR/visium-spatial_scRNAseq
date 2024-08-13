@@ -2,8 +2,8 @@
 title: "Quality control"
 params:
     protocol:
-      - "FF" # Fresh frozen as FF, or FFPE
-    custom_sample_names: ["V1_Breast_Cancer_1", "V1_Breast_Cancer_2"] # [Sagittal_Anterior_1, Sagittal_Anterior_2, Sagittal_Posterior_1, Sagittal_Posterior_2] or Set as null if not wanted
+      - "FFPE" # Fresh frozen as FF, or FFPE
+    custom_sample_names: [Sagittal_Anterior_1, Sagittal_Anterior_2, Sagittal_Posterior_1, Sagittal_Posterior_2] # [Sagittal_Anterior_1, Sagittal_Anterior_2, Sagittal_Posterior_1, Sagittal_Posterior_2] or Set as null if not wanted
     ncounts_thres: null
     nfeature_thres: null
 ---
@@ -59,7 +59,7 @@ You can supply these paramaters upon render.
 Restore project dependencies:
 
 ```{r}
-renv::restore()
+#renv::restore()
 ```
 
 Load Bioconductor packages:

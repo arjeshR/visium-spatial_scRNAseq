@@ -2,7 +2,7 @@
 title: "Spatially variable feature detection"
 params:
   seurat:
-    - "07-integrate-samples.rds" # "05-clustering.rds"
+    - "06-merge-samples.rds" # "07-integrate-samples.rds" or "05-clustering.rds"
   nfeatures:
     - 5
   spatial.method:
@@ -82,7 +82,7 @@ You can supply these paramaters upon render.
 Restore project dependencies:
 
 ```{r}
-renv::restore()
+#renv::restore()
 ```
 
 Add child documents
@@ -210,8 +210,8 @@ Next we get the top spatially variable features ready for plotting.
 #| message: false
 #| warning: false
 
-top.features <- lapply(seuratprep, SpatiallyVariableFeatures, 
-                       selection.method = params$spatial.method, assay = "SCT")
+top.features <- lapply(seuratprep, VariableFeatures, 
+                     selection.method = params$spatial.method, assay = "SCT")
 ```
 
 ### Spatial plots

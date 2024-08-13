@@ -35,9 +35,13 @@ params:
     - 5
 ---
 
+
+
 # Setup
 
 ## Parameters
+
+
 
 ```{r}
 #| code-fold: true
@@ -117,6 +121,8 @@ par <- jsonlite::toJSON(par, pretty = TRUE)
 knitr::kable(jsonlite::fromJSON(par))
 ```
 
+
+
 ::: callout-tip
 You can supply these paramaters upon render.
 :::
@@ -129,17 +135,27 @@ You can supply these paramaters upon render.
 
 Restore project dependencies:
 
+
+
 ```{r}
 renv::restore()
 ```
 
+
+
 Add child documents
+
+
 
 ```{r}
 #| child = "analysis/big-data.qmd"
 ```
 
+
+
 Load Bioconductor packages:
+
+
 
 ```{r}
 #| message: false
@@ -148,7 +164,11 @@ Load Bioconductor packages:
 library(Seurat)
 ```
 
+
+
 Load CRAN packages:
+
+
 
 ```{r}
 #| message: false
@@ -162,11 +182,17 @@ library(viridis)
 
 ```
 
+
+
 Source user-defined functions:
+
+
 
 ```{r}
 source("scripts/reduceDims.R")
 ```
+
+
 
 ::: callout-note
 Much of the visium quarto workflow include Rscripts which are not part of a external library but are sourced at the start of each workflow. Each script is stored within `scripts/`. Please see the start of each .qmd file for the details of which scripts have been sourced.
@@ -188,9 +214,13 @@ Please take the seurat object of choice and define them as `params$seurat` in @t
 
 Read experiment data:
 
+
+
 ```{r}
 seurat <- readRDS(paste0("output/", params$seurat))
 ```
+
+
 
 ## Reading in Atlas object
 
@@ -208,16 +238,22 @@ For liver see (which will be useful for NN projects):
 
 Read in cell atlas:
 
+
+
 ```{r}
 atlas <- readRDS(params$atlas)
 
 ```
+
+
 
 ## Process Cell Atlas
 
 We process the cell atlas in the same way we would for any single cell experiment - normalisation, pca, and dim reduction.
 
 First we normalise the cell atlas with SCT normalisation. Using a smaller ncells (e.g. ncells = 3000) speeds up normalisation.
+
+
 
 ```{r}
 options(future.globals.maxSize = 10 * 1024 * 1024 * 1024)  # 10 GiB
@@ -228,13 +264,21 @@ atlas1 <- SCTransform(atlas, method = "glmGamPoi", vars.to.regress = "nFeature_R
 
 ```
 
+
+
 Add Group to meta.data
+
+
 
 ```{r}
 atlas1@meta.data$Group = atlas1@meta.data[[params$atlas.group]]
 ```
 
+
+
 We then complete PCA on the cell atlas:
+
+
 
 ```{r}
 #| message: false
@@ -243,11 +287,15 @@ We then complete PCA on the cell atlas:
 atlas1 <- pca(atlas)
 ```
 
+
+
 ::: {.panel-tabset}
 
 ## PCA Group
 
 @fig-atlas-pca-class And plot PCAs with labels:
+
+
 
 ```{r}
 #| message: false
@@ -261,9 +309,13 @@ dimplot(atlas1, reduction = "pca", label = FALSE,
         group.by = params$atlas.group, title = "PCA-Atlas")
 ```
 
+
+
 ## PCA nCounts
 
 @fig-atlas-pca-ncount Plot PCA - nCounts
+
+
 
 ```{r}
 #| message: false
@@ -277,9 +329,13 @@ featureplot(atlas1, reduction = "pca", label = FALSE,
             feature = "nCount_RNA", title = "PCA-Atlas")
 ```
 
+
+
 ## PCA nFeatures
 
 @fig-atlas-pca-nfeatures Plot PCA - nFeatures
+
+
 
 ```{r}
 #| message: false
@@ -293,6 +349,8 @@ featureplot(atlas1, reduction = "pca", label = FALSE,
             feature = "nFeature_RNA", title = "PCA-Atlas")
 ```
 
+
+
 :::
 
 ## Process Cell Atlas
@@ -304,6 +362,8 @@ Please leave `params$vars.to.regress` as `FALSE` if you do not wish to regress o
 :::
 
 @fig-pca-vars-regress
+
+
 
 ```{r}
 #| message: false
@@ -339,9 +399,13 @@ if (params$vars.to.regress != FALSE) {
  
 ```
 
+
+
 ### Elbow
 
 As in other workflows we use an elbow plot to infer the number of PCs to use downstream.
+
+
 
 ```{r}
 #| fig.width: !expr params$plot_width
@@ -352,11 +416,15 @@ As in other workflows we use an elbow plot to infer the number of PCs to use dow
 elbow(atlas, vline1 = 10, vline2 = 20, title = "Elbow-Atlas")
 ```
 
+
+
 ::: callout-note
 Please take the number of PCs (e.g. `1:20`) you want as inferred from inspecting the elbow plot and rerun this workflow with the `elbow_range` parameter reset for your needs. See @tbl-params for details. We advise to take a larger PC number than the exact elbow visualised.
 :::
 
 Below we take number of PCs from visual inspection defined by the parameter elbow vector `r params$elbow_range`:
+
+
 
 ```{r}
 #| warning: false
@@ -364,17 +432,25 @@ Below we take number of PCs from visual inspection defined by the parameter elbo
 elbow_vector <- params$elbow_range
 ```
 
+
+
 And we add that information to the cell atlas object
+
+
 
 ```{r}
 atlas$Elbow <- rep(elbow_vector, nrow(atlas@meta.data))
 ```
+
+
 
 ### UMAP
 
 Next we take the results from our PCA and feed this into a non-linear dimensionality reduction technique such as UMAP.
 
 Below we explore the parameter space of UMAPs for our merged seurat samples. Remember that `n.neighbors` should be in the range 5 to 50, and `min.dist` sensible values are in the range 0.001 to 0.5.
+
+
 
 ```{r}
 #| label: Explore-Features-UMAP
@@ -393,11 +469,15 @@ atlas_4 <- umap(atlas, n.neighbors = 20, min.dist = 0.1)
 atlas_5 <- umap(atlas, n.neighbors = 10, min.dist = 0.001)
 ```
 
+
+
 ::: {.panel-tabset}
 
 ## n.n 30 min.dist 0.3
 
 @fig-umap-30-03 Plot UMAP n.neighbors = 30, min.dist = 0.3
+
+
 
 ```{r}
 #| fig.width: !expr (params$plot_width + 1)
@@ -410,9 +490,13 @@ dimplot(atlas_1, reduction = "umap", label = TRUE,
         title = "UMAP-Atlas n.neighbors = 30, min.dist = 0.3")
 ```
 
+
+
 ## n.n 5 min.dist 0.25
 
 @fig-umap-05-025 Plot UMAP n.neighbors = 5, min.dist = 0.25
+
+
 
 ```{r}
 #| fig.width: !expr (params$plot_width + 1)
@@ -425,9 +509,13 @@ dimplot(atlas_2, reduction = "umap", label = TRUE,
         title = "UMAP-Atlas n.neighbors = 5, min.dist = 0.25")
 ```
 
+
+
 ## n.n 10 min.dist 0.1
 
 @fig-umap-10-01 Plot UMAP n.neighbors = 10, min.dist = 0.1
+
+
 
 ```{r}
 #| fig.width: !expr (params$plot_width + 1)
@@ -440,9 +528,13 @@ dimplot(atlas_3, reduction = "umap", label = TRUE,
         title = "UMAP-Atlas n.neighbors = 10, min.dist = 0.1")
 ```
 
+
+
 ## n.n 20 min.dist 0.1
 
 @fig-umap-20-01 Plot UMAP n.neighbors = 20, min.dist = 0.1
+
+
 
 ```{r}
 #| fig.width: !expr (params$plot_width + 1)
@@ -455,9 +547,13 @@ dimplot(atlas_4, reduction = "umap", label = TRUE,
         title = "UMAP-Atlas n.neighbors = 20, min.dist = 0.1")
 ```
 
+
+
 ## n.n 10 min.dist 0.001
 
 @fig-umap-10-0001 Plot UMAP n.neighbors = 10, min.dist = 0.001
+
+
 
 ```{r}
 #| fig.width: !expr (params$plot_width + 1)
@@ -470,20 +566,28 @@ dimplot(atlas_5, reduction = "umap", label = TRUE,
         title = "UMAP-Atlas n.neighbors = 10, min.dist = 0.001")
 ```
 
+
+
 :::
 
 Clean up workspace
+
+
 
 ```{r}
 rm(atlas_1, atlas_2, atlas_3, atlas_4, atlas_5)
 gc()
 ```
 
+
+
 ### Plot UMAP
 
 Please take the values for `n.neighbors` and `min.dist` that are representative across UMAP plots and set them as params.
 
 Below we run UMAP with the paramaters of choice `r paste0("n.neighbors: ", params$n.neighbors, " min.dist: ", params$min.dist)`
+
+
 
 ```{r}
 #| message: false
@@ -492,6 +596,8 @@ Below we run UMAP with the paramaters of choice `r paste0("n.neighbors: ", param
 
 atlas <- umap(atlas, n.neighbors = params$n.neighbors, min.dist = params$min.dist)
 ```
+
+
 
 As previously discussed it can also be a very useful exploratory data analysis step to look at the UMAP/TSNE coloured by QC values such as overall counts (`nCount_Spatial`) and number of features per spot (`nFeature_Spatial`). The idea here is that a cluster may be driven by a technical reason such as a difference in library size which could be amenable to normalisation approaches - or should be interpreted with caution downstream (some biological regions are also known to reliably have low counts and this may be evident).
 
@@ -503,6 +609,8 @@ Below we plot a UMAP with chosen params coloured by `r params$atlas.group`, `nCo
 
 @fig-umap-chosen-atlas-group Plot UMAP Atlas Group
 
+
+
 ```{r}
 #| fig.width: !expr (params$plot_width + 1)
 #| fig.height: !expr params$plot_height
@@ -513,9 +621,13 @@ Below we plot a UMAP with chosen params coloured by `r params$atlas.group`, `nCo
 DimPlot(atlas, group.by = params$atlas.group, label = TRUE)
 ```
 
+
+
 ## UMAP nCount_RNA
 
 @fig-umap-chosen-ncounts Plot UMAP nCount Atlas
+
+
 
 ```{r}
 #| fig.width: !expr params$plot_width
@@ -528,9 +640,13 @@ featureplot(atlas, reduction = "umap",label =  FALSE,
 ```
 
 
+
+
 ## UMAP nFeature_RNA
 
 @fig-umap-chosen-nfeature Plot UMAP nFeature Atlas
+
+
 
 ```{r}
 #| fig.width: !expr params$plot_width
@@ -541,6 +657,8 @@ featureplot(atlas, reduction = "umap",label =  FALSE,
 featureplot(atlas, reduction = "umap", label = FALSE, 
             feature = "nFeature_RNA", title = "UMAP-Atlas")
 ```
+
+
 :::
 
 ## Find Anchors
@@ -551,6 +669,8 @@ Please see https://satijalab.org/seurat/articles/integration_mapping.html for mo
 
 Below we find transfer anchors
 
+
+
 ```{r}
 #| message: false
 #| warning: false
@@ -560,7 +680,11 @@ anchors <- FindTransferAnchors(reference = atlas,
                                normalization.method = "SCT")
 ```
 
+
+
 Next we transfer those a anchors
+
+
 
 ```{r}
 #| message: false
@@ -576,17 +700,25 @@ predictions.assay <- TransferData(anchorset = anchors,
                                   dims = dims)
 ```	
 
+
+
 And save these predictions as a new assay within our seurat object.
+
+
 
 ```{r}
 seurat[["predictions"]] <- predictions.assay
 ```
+
+
 
 ## Plot Cell Atlas Annotations
 
 Now that we have our new annotations from our cell atlas we can plot these annotation onto our tissue images.
 
 Below we plot an example of this:
+
+
 
 ```{r}
 #| fig.width: !expr (params$plot_width + 10)
@@ -599,11 +731,15 @@ SpatialFeaturePlot(seurat, features = head(params$feature.example, 2),
                    pt.size.factor = 1.6, ncol = 2, crop = TRUE)
 ```
 
+
+
 ## Find Spatially variable Cell Atlas Annotations
 
 As in previous worksheets (`10-spatial-features.qmd`), we can also look at which of these new annotations are spatially variable.
 
 Below we find those annotations that are localised rather than randomly distributed, and we plot those top features below:
+
+
 
 ```{r}
 seurat <- FindSpatiallyVariableFeatures(seurat, assay = "predictions", 
@@ -626,6 +762,8 @@ sp <- SpatialPlot(object = seurat, features = top.clusters, ncol = 2)
 wrap_plots(sp)
 ```
 
+
+
 ## Plot labels of interest
 
 We can also plot any labels of interest below:
@@ -635,6 +773,8 @@ Please specify any labels of interest as params above @tbl-params
 :::
 
 @fig-spatial-interest
+
+
 
 ```{r}
 #| fig.width: !expr (params$plot_width + 25)
@@ -646,15 +786,23 @@ SpatialFeaturePlot(seurat, features = params$feature.example,
                    pt.size.factor = 1,  crop = FALSE, alpha = c(0.1, 1))
 ```
 
+
+
 # Output
 
 Save experiment object:
+
+
 
 ```{r}
 saveRDS(seurat, file = "output/11-cell-atlas.rds")
 ```
 
+
+
 ## Output Description 
+
+
 
 ```{r}
 #| code-fold: true
@@ -675,6 +823,8 @@ par <- jsonlite::toJSON(par, pretty = TRUE)
 knitr::kable(jsonlite::fromJSON(par))
 ```
 
+
+
 ## Session information 
 
 Print session information:
@@ -683,10 +833,15 @@ Print session information:
 
 <div id="BlockName" class="collapse">  
 
+
+
 ```{r}
 #| code-fold: false
 sessionInfo()
 ```
 
+
+
 </div>
+
 

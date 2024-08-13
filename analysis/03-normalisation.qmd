@@ -6,7 +6,7 @@ params:
   min_cells:
     - 2
   example:
-    - "ACTA2"
+    - "Acta2"
 ---
 
 # Setup
@@ -55,7 +55,7 @@ You can supply these paramaters upon render.
 Restore project dependencies:
 
 ```{r}
-renv::restore()
+#renv::restore()
 ```
 
 Add child documents

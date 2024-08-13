@@ -5,15 +5,15 @@ all: index.html \
      about.html \
      $(OUTPUT)/01-data-loading.html \
      $(OUTPUT)/02-quality-control.html \
-     #$(OUTPUT)/03-normalisation.html \
-     #$(OUTPUT)/04-reduced-dimensions.html \
-     #$(OUTPUT)/05-clustering.html \
-     #$(OUTPUT)/06-merge-samples.html \
-     #$(OUTPUT)/07-integrate-samples.html \
-     #$(OUTPUT)/08-marker-detection.html \
-     #$(OUTPUT)/09-fea-annotation.html \
-     #$(OUTPUT)/10-spatial-features.html \
-     #$(OUTPUT)/11-cell-atlas.html
+     $(OUTPUT)/03-normalisation.html \
+     $(OUTPUT)/04-reduced-dimensions.html \
+     $(OUTPUT)/05-clustering.html \
+     $(OUTPUT)/06-merge-samples.html \
+     $(OUTPUT)/07-integrate-samples.html \
+     $(OUTPUT)/08-marker-detection.html \
+     $(OUTPUT)/09-fea-annotation.html \
+     $(OUTPUT)/10-spatial-features.html \
+     $(OUTPUT)/11-cell-atlas.html
 
 index.html: index.qmd
 	quarto render $<
@@ -44,6 +44,7 @@ $(OUTPUT)/07-integrate-samples.html: $(WORKSPACE)/07-integrate-samples.qmd $(OUT
 
 $(OUTPUT)/08-marker-detection.html: $(WORKSPACE)/08-marker-detection.qmd $(OUTPUT)/07-integrate-samples.html
 	quarto render $<
+
 
 $(OUTPUT)/09-fea-annotation.html: $(WORKSPACE)/09-fea-annotation.qmd $(OUTPUT)/08-marker-detection.html
 	quarto render $<

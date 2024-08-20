@@ -45,7 +45,6 @@ $(OUTPUT)/07-integrate-samples.html: $(WORKSPACE)/07-integrate-samples.qmd $(OUT
 $(OUTPUT)/08-marker-detection.html: $(WORKSPACE)/08-marker-detection.qmd $(OUTPUT)/07-integrate-samples.html
 	quarto render $<
 
-
 $(OUTPUT)/09-fea-annotation.html: $(WORKSPACE)/09-fea-annotation.qmd $(OUTPUT)/08-marker-detection.html
 	quarto render $<
 

@@ -17,9 +17,9 @@ params:
   min.dist:
     - 0.3
   nfeatures.sct:
-    - 2000
+    - 1000 #2000
   ncells.sct:
-    - 3000
+    - 2000 #3000
   feature.example: ["Astro", "L2/3 IT", "L4", "L5 PT", "L5 IT", "L6 CT", "L6 IT", "L6b", "Oligo"]
   nfeatures.spatial:
     - 100
@@ -29,6 +29,8 @@ params:
     - 5
   r.metric:
     - 5 # standard given by Seurat
+  r.memory:
+    - 25 # number of GiBs required to run the SCT Transformation
   plot_width:
     - 6
   plot_height:
@@ -109,6 +111,11 @@ list(
 Parameter = "r.metric",
 Value = params$r.metric,
 Description = "r value at which to report the trans value of the mark variogram. Seurat advised to leave at 5."
+),
+list(
+Parameter = "r.memory",
+Value = params$r.memory,
+Description = "Total Storage in Gigabytes required to optimise the SCT Transformation function."
 )
 )
 
@@ -159,6 +166,7 @@ library(ggplot2)
 library(dplyr)
 library(reshape2)
 library(viridis)
+library(future) #
 
 ```
 
@@ -220,12 +228,11 @@ We process the cell atlas in the same way we would for any single cell experimen
 First we normalise the cell atlas with SCT normalisation. Using a smaller ncells (e.g. ncells = 3000) speeds up normalisation.
 
 ```{r}
-options(future.globals.maxSize = 10 * 1024 * 1024 * 1024)  # 10 GiB
+options(future.globals.maxSize = params$r.memory * 1024^3) 
 
-atlas1 <- SCTransform(atlas, method = "glmGamPoi", vars.to.regress = "nFeature_RNA", ncells = params$ncells.sct,
-                      variable.features.n = params$nfeatures.sct, 
-                      verbose = FALSE) 
-
+atlas1 <- SCTransform(atlas, method = "glmGamPoi", ncells = params$ncells.sct, conserve.memory = TRUE,
+                      variable.features.n = params$nfeatures.sct ,
+                      verbose = FALSE)
 ```
 
 Add Group to meta.data
@@ -240,7 +247,7 @@ We then complete PCA on the cell atlas:
 #| message: false
 #| warning: false
 
-atlas1 <- pca(atlas)
+atlas1 <- pca(atlas1)
 ```
 
 ::: {.panel-tabset}
@@ -320,8 +327,8 @@ if (params$vars.to.regress != FALSE) {
   
   gc()
 
-  atlas <- SCTransform(atlas, ncells = params$ncells.sct, 
-                       variable.features.n = params$nfeatures.sct, 
+  atlas <- SCTransform(atlas, method = "glmGamPoi", ncells = params$ncells.sct, conserve.memory = TRUE,
+                       variable.features.n = params$nfeatures.sct ,
                        verbose = FALSE, 
                        vars.to.regress = params$vars.to.regress)  
   
@@ -490,7 +497,7 @@ Below we run UMAP with the paramaters of choice `r paste0("n.neighbors: ", param
 #| warning: false
 #| results: hide
 
-atlas <- umap(atlas, n.neighbors = params$n.neighbors, min.dist = params$min.dist)
+atlas <- umap(atlas,n.neighbors = params$n.neighbors, min.dist = params$min.dist)
 ```
 
 As previously discussed it can also be a very useful exploratory data analysis step to look at the UMAP/TSNE coloured by QC values such as overall counts (`nCount_Spatial`) and number of features per spot (`nFeature_Spatial`). The idea here is that a cluster may be driven by a technical reason such as a difference in library size which could be amenable to normalisation approaches - or should be interpreted with caution downstream (some biological regions are also known to reliably have low counts and this may be evident).
@@ -593,6 +600,10 @@ Below we plot an example of this:
 #| fig.height: !expr (params$plot_height + 10)
 #| fig-cap: Spatial plot with predicted Cell Atlas labels.
 
+top.clusters <- head(VariableFeatures(seurat), params$top.features)
+
+sp <- SpatialPlot(object = seurat, features = top.clusters, ncol = 2)
+
 DefaultAssay(seurat) <- "predictions"
 
 SpatialFeaturePlot(seurat, features = head(params$feature.example, 2), 
@@ -612,9 +623,6 @@ seurat <- FindSpatiallyVariableFeatures(seurat, assay = "predictions",
                                         r.metric = params$r.metric, 
                                         slot = "data")
 
-top.clusters <- head(VariableFeatures(seurat), params$top.features)
-
-sp <- SpatialPlot(object = seurat, features = top.clusters, ncol = 2)
 ```
 
 ```{r}

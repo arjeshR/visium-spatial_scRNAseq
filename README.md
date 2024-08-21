@@ -62,7 +62,7 @@ Please ensure you also have `make` and [`R`](https://cran.r-project.org/bin/) ve
    We can then install the .deb file and test quarto install:
    
    ```console
-   $ sudo dpkg -i quarto-0.9.640-linux-amd64.deb
+   $ sudo dpkg -i quarto-1.5.56-linux-amd64.deb 
    $ quarto -V # Test version and install
    ```
    See the following [link](https://quarto.org/docs/get-started/hello/text-editor.html) for more details on rendering quarto documents `.qmd`
@@ -82,7 +82,12 @@ Please ensure you also have `make` and [`R`](https://cran.r-project.org/bin/) ve
    | V1_Breast_Cancer_Block_A_Section_1 | V1_Breast_Cancer_Block_A_Section_1_image | V19L29-097 | slide1 | B1 | T1T2-F10 | V1_Breast_Cancer_Block_A_Section_1_filtered_feature_bc_matrix.h5 | FF |
    | V1_Breast_Cancer_Block_A_Section_2 | V1_Breast_Cancer_Block_A_Section_2_image | V19L29-098 | slide2 | B1 | T1T2-H10 | V1_Breast_Cancer_Block_A_Section_2_filtered_feature_bc_matrix.h5 | FF |
 
-2. Fill in paramaters 
+2. Run bash script for getting Data Files ( for Visium Mouse Brain Data ) 
+   ```console
+   $ bash wget.sh
+   ```
+   
+4. Fill in parameters
 
    These can be filled in at the top of each workbook e.g. for `01-data-loading`:
 
@@ -100,19 +105,19 @@ Please ensure you also have `make` and [`R`](https://cran.r-project.org/bin/) ve
    ```
    or supplied upon render using the `-P` flag:
 
-3. Construct your make file
+5. Construct your make file
 
    ```console
    $ vim Makefile # Edit/Comment out .qmd files not in use.
    ```
 
-4. Test make file
+6. Test make file
 
    ```console
    $ make -n
    ```
 
-5. Run make file
+7. Run make file
 
    ```console
    $ make

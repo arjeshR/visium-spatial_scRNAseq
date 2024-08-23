@@ -1,7 +1,9 @@
+.PHONY: all create_output
 WORKSPACE = $(realpath analysis)
 OUTPUT = $(realpath output)
 
-all: index.html \
+all: create_output \
+     index.html \
      about.html \
      $(OUTPUT)/01-data-loading.html \
      $(OUTPUT)/02-quality-control.html \
@@ -14,6 +16,9 @@ all: index.html \
      $(OUTPUT)/09-fea-annotation.html \
      $(OUTPUT)/10-spatial-features.html \
      $(OUTPUT)/11-cell-atlas.html
+
+create_output:
+	mkdir -p output 
 
 index.html: index.qmd
 	quarto render $<

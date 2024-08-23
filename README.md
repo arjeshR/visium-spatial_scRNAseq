@@ -51,8 +51,12 @@ Please ensure you also have `make` and [`R`](https://cran.r-project.org/bin/) ve
    'help.start()' for an HTML browser interface to help.
    Type 'q()' to quit R.
 
-   > install.packages("yaml")
-   > install.packages("renv")
+   > install.packages("yaml",force = T)
+   > install.packages("renv",force = T)
+   > install.packages("BiocManager",force = T)      
+   > BiocManager::install() 
+   > renv::restore()
+   > renv::status()
    ```
 
 2. Install quarto
@@ -62,6 +66,7 @@ Please ensure you also have `make` and [`R`](https://cran.r-project.org/bin/) ve
    We can then install the .deb file and test quarto install:
    
    ```console
+   $ wget https://github.com/quarto-dev/quarto-cli/releases/download/v1.5.56/quarto-1.5.56-linux-amd64.deb --no-check-certificate
    $ sudo dpkg -i quarto-1.5.56-linux-amd64.deb 
    $ quarto -V # Test version and install
    ```
@@ -82,7 +87,7 @@ Please ensure you also have `make` and [`R`](https://cran.r-project.org/bin/) ve
    | V1_Breast_Cancer_Block_A_Section_1 | V1_Breast_Cancer_Block_A_Section_1_image | V19L29-097 | slide1 | B1 | T1T2-F10 | V1_Breast_Cancer_Block_A_Section_1_filtered_feature_bc_matrix.h5 | FF |
    | V1_Breast_Cancer_Block_A_Section_2 | V1_Breast_Cancer_Block_A_Section_2_image | V19L29-098 | slide2 | B1 | T1T2-H10 | V1_Breast_Cancer_Block_A_Section_2_filtered_feature_bc_matrix.h5 | FF |
 
-2. Run bash script for getting Data Files ( for Visium Mouse Brain Data ) 
+2. |OPTIONAL STEP|  Run bash script for getting Data Files ( for Visium Mouse Brain Data ) 
    ```console
    $ bash wget.sh
    ```

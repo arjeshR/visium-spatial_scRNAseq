@@ -952,6 +952,18 @@
       ],
       "Hash": "ed9597168d850071aa9abbbef7be7204"
     },
+    "boot": {
+      "Package": "boot",
+      "Version": "1.3-30",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "graphics",
+        "stats"
+      ],
+      "Hash": "96abeed416a286d4a0f52e550b612343"
+    },
     "bslib": {
       "Package": "bslib",
       "Version": "0.8.0",
@@ -1007,6 +1019,19 @@
         "utils"
       ],
       "Hash": "0e14e01ce07e7c88fd25de6d4260d26b"
+    },
+    "class": {
+      "Package": "class",
+      "Version": "7.3-22",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "MASS",
+        "R",
+        "stats",
+        "utils"
+      ],
+      "Hash": "f91f6b29f38b8c280f2b9477787d4bb2"
     },
     "cli": {
       "Package": "cli",
@@ -1409,6 +1434,19 @@
         "rlang"
       ],
       "Hash": "c2efdd5f0bcd1ea861c2d4e2a883a67d"
+    },
+    "foreign": {
+      "Package": "foreign",
+      "Version": "0.8-87",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "methods",
+        "stats",
+        "utils"
+      ],
+      "Hash": "81fc09bdeab0077a73927ed1243404b6"
     },
     "formatR": {
       "Package": "formatR",
@@ -1822,6 +1860,20 @@
       ],
       "Hash": "588d091c35389f1f4a9d533c8d709b35"
     },
+    "hdf5r": {
+      "Package": "hdf5r",
+      "Version": "1.3.11",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "R6",
+        "bit64",
+        "methods",
+        "utils"
+      ],
+      "Hash": "8f066454d3c306fa34e2885fbbfd4e1c"
+    },
     "here": {
       "Package": "here",
       "Version": "1.0.1",
@@ -2212,6 +2264,18 @@
       ],
       "Hash": "2769a88be217841b1f33ed469675c3cc"
     },
+    "nnet": {
+      "Package": "nnet",
+      "Version": "7.3-19",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "stats",
+        "utils"
+      ],
+      "Hash": "2c797b46eea7fb58ede195bc0b1f1138"
+    },
     "openssl": {
       "Package": "openssl",
       "Version": "2.2.0",
@@ -2221,6 +2285,28 @@
         "askpass"
       ],
       "Hash": "2bcca3848e4734eb3b16103bc9aa4b8e"
+    },
+    "org.Hs.eg.db": {
+      "Package": "org.Hs.eg.db",
+      "Version": "3.19.1",
+      "Source": "Bioconductor",
+      "Requirements": [
+        "AnnotationDbi",
+        "R",
+        "methods"
+      ],
+      "Hash": "1ac8a004ad2e4f6489dadf3a2ffeb638"
+    },
+    "org.Mm.eg.db": {
+      "Package": "org.Mm.eg.db",
+      "Version": "3.19.1",
+      "Source": "Bioconductor",
+      "Requirements": [
+        "AnnotationDbi",
+        "R",
+        "methods"
+      ],
+      "Hash": "3798992dbae16046c472adb1b5fcd04b"
     },
     "parallelly": {
       "Package": "parallelly",
@@ -2523,6 +2609,19 @@
       ],
       "Hash": "27f9502e1cdbfa195f94e03b0f517484"
     },
+    "rpart": {
+      "Package": "rpart",
+      "Version": "4.1.23",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "grDevices",
+        "graphics",
+        "stats"
+      ],
+      "Hash": "b3d390424f41d04174cccf84d49676c2"
+    },
     "rprojroot": {
       "Package": "rprojroot",
       "Version": "2.0.4",
@@ -2742,6 +2841,19 @@
         "methods"
       ],
       "Hash": "ffe1f9e95a4375530747b268f82b5086"
+    },
+    "spatial": {
+      "Package": "spatial",
+      "Version": "7.3-17",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "graphics",
+        "stats",
+        "utils"
+      ],
+      "Hash": "1229a01b4ec059e9f2396724f2ec9010"
     },
     "spatstat.data": {
       "Package": "spatstat.data",

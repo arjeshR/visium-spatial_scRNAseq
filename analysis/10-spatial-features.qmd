@@ -2,7 +2,7 @@
 title: "Spatially variable feature detection"
 params:
   seurat:
-    - "06-merge-samples.rds" # "07-integrate-samples.rds" or "05-clustering.rds"
+    - "07-integrate-samples.rds" # "05-clustering.rds"
   nfeatures:
     - 5
   spatial.method:

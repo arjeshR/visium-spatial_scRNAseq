@@ -1,8 +1,9 @@
-wget https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_molecule_info.h5 --no-check-certificate
-wget https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_filtered_feature_bc_matrix.h5 --no-check-certificate
-wget https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_filtered_feature_bc_matrix.tar.gz --no-check-certificate
-wget https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_raw_feature_bc_matrix.h5 --no-check-certificate
-wget https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_raw_feature_bc_matrix.tar.gz --no-check-certificate
-wget https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_spatial.tar.gz --no-check-certificate
-wget https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_spatial_enrichment.csv --no-check-certificate
-wget https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_cloupe.cloupe --no-check-certificate
+wget https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_molecule_info.h5 --no-check-certificate -P ./data/Visium_FFPE_Mouse_Brain/outs
+wget https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_filtered_feature_bc_matrix.h5 --no-check-certificate -P ./data/Visium_FFPE_Mouse_Brain/outs
+wget https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_filtered_feature_bc_matrix.tar.gz --no-check-certificate -P ./data/Visium_FFPE_Mouse_Brain/outs
+wget https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_raw_feature_bc_matrix.h5 --no-check-certificate -P ./data/Visium_FFPE_Mouse_Brain/outs
+wget https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_raw_feature_bc_matrix.tar.gz --no-check-certificate -P ./data/Visium_FFPE_Mouse_Brain/outs
+wget https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_spatial.tar.gz --no-check-certificate -P ./data/Visium_FFPE_Mouse_Brain/outs
+wget https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_spatial_enrichment.csv --no-check-certificate -P ./data/Visium_FFPE_Mouse_Brain/outs
+wget https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_cloupe.cloupe --no-check-certificate -P ./data/Visium_FFPE_Mouse_Brain/outs
+wget https://www.dropbox.com/s/cuowvm4vrf65pvq/allen_cortex.rds?dl=1 --no-check-certificate -P ./data

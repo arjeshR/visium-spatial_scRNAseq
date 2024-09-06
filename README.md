@@ -58,6 +58,11 @@ Please ensure you also have `make` and [`R`](https://cran.r-project.org/bin/) ve
    > renv::restore()
    > renv::status()
    ```
+If you encounter any problems with dependencies, you can try forcing a rebuild of packages by running the following command:
+   ```console    
+   > renv::restore(rebuild = TRUE)
+   ```
+
 
 2. Install quarto
 

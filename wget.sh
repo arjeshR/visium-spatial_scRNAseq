@@ -6,4 +6,4 @@ wget https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brai
 wget https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_spatial.tar.gz --no-check-certificate -P ./data/Visium_FFPE_Mouse_Brain/outs
 wget https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_spatial_enrichment.csv --no-check-certificate -P ./data/Visium_FFPE_Mouse_Brain/outs
 wget https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_cloupe.cloupe --no-check-certificate -P ./data/Visium_FFPE_Mouse_Brain/outs
-wget https://www.dropbox.com/s/cuowvm4vrf65pvq/allen_cortex.rds?dl=1 --no-check-certificate -P ./data
+wget https://www.dropbox.com/s/cuowvm4vrf65pvq/allen_cortex.rds --no-check-certificate -P ./data

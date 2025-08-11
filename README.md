@@ -1,7 +1,7 @@
 # visium
 
 A quarto workflow to analyse and visualise 10x Visium Spatial Transcriptomics data 
-!https://github.com/arjeshR/visium-spatial_scRNAseq/blob/ArjeshR/Screenshot%202025-08-11%20181231.png
+![GitHub Logo](https://github.com/arjeshR/visium-spatial_scRNAseq/blob/ArjeshR/Screenshot%202025-08-11%20181231.png)
 
 ## Contents
 
